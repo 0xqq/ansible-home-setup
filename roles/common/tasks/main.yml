@@ -58,6 +58,12 @@
     - "net-tools"
     - "git"
     - "base-devel"
+    - "iperf"
+    - "iperf3"
+    - "iotop"
+    - "python"
+    - "python-flask"
+    - "python-cryptography"
 
 - name: Disable the stupid vim mouse integration
   lineinfile:
