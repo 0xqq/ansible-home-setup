@@ -1,0 +1,17 @@
+---
+- hosts: metal
+  become: yes
+  roles:
+     - common
+     - docker
+
+- hosts: rpi
+  become: yes
+  roles:
+     - common
+     - docker
+
+- hosts: vps
+  become: yes
+  roles:
+     - common

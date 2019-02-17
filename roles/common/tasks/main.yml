@@ -1,0 +1,173 @@
+---
+- name: Set hostname
+  hostname:
+    name: "{{ hostname }}"
+
+- name: Set root password
+  user:
+    name: root
+    password: "{{ root_password }}"
+
+- name: Upload root key
+  authorized_key:
+    user: root
+    key: "{{ all_keys|map(attribute='publish_ssh_key')|join('\n') }}"
+    exclusive: yes
+
+- name: Disable root SSH password auth
+  lineinfile:
+    dest: /etc/ssh/sshd_config
+    regexp: "^#?PermitRootLogin"
+    line: "PermitRootLogin prohibit-password"
+    state: present
+  notify: restart sshd
+
+- name: Disable password authentication
+  lineinfile:
+    dest: /etc/ssh/sshd_config
+    regexp: "^#?PasswordAuthentication"
+    line: "PasswordAuthentication no"
+    state: present
+  notify: restart sshd
+
+- name: Set allowed ssh users
+  lineinfile:
+    dest: /etc/ssh/sshd_config
+    regexp: "^#?AllowUsers"
+    line: "AllowUsers jiri root ansible"
+    state: present
+  notify: restart sshd
+
+- name: Update system
+  pacman:
+    update_cache: yes
+    upgrade: yes
+  when: ansible_distribution == "Archlinux"
+
+- name: Install basic tools
+  package:
+    state: present
+    name:
+    - "sudo"
+    - "vim"
+    - "htop"
+    - "curl"
+    - "wget"
+    - "dnsutils"
+    - "jq"
+    - "net-tools"
+    - "git"
+    - "base-devel"
+
+- name: Disable the stupid vim mouse integration
+  lineinfile:
+    dest: /etc/vimrc
+    regexp: "^#?autocmd"
+    line: "autocmd BufEnter * set mouse="
+    state: present
+
+- name: Create ansible group
+  group:
+    name: ansible
+    state: present
+    gid: "666"
+
+- name: Create jiri group
+  group:
+    name: jiri
+    state: present
+
+- name: Create ansible user
+  user:
+    name: ansible
+    group: ansible
+    comment: Ansible System User
+    uid: "666"
+
+- name: Create jiri user
+  user:
+    name: jiri
+    password: "{{ root_password }}"
+    group: jiri
+    comment: Jiri System User
+
+- name: Upload ansible key
+  authorized_key:
+    user: ansible
+    key: "{{ all_keys|map(attribute='publish_ssh_key')|join('\n') }}"
+    exclusive: yes
+
+- name: Upload jiri key
+  authorized_key:
+    user: jiri
+    key: "{{ all_keys|map(attribute='publish_ssh_key')|join('\n') }}"
+    exclusive: yes
+
+- name: Set RSA key for root
+  copy:
+    content: "{{ ssh_key_private }}"
+    dest: /root/.ssh/id_rsa
+    owner: root
+    group: root
+    mode: "400"
+
+- name: Set RSA pubkey for root
+  copy:
+    content: "{{ ssh_key_public }}"
+    dest: /root/.ssh/id_rsa.pub
+    owner: root
+    group: root
+    mode: "644"
+
+- name: Sudo for ansible
+  copy:
+    content: "ansible ALL=(ALL) NOPASSWD: ALL\n"
+    dest: /etc/sudoers.d/ansible
+
+- name: Sudo for jiri
+  copy:
+    content: "jiri ALL=(ALL) NOPASSWD: ALL\n"
+    dest: /etc/sudoers.d/jiri
+
+- name: Set timezone
+  file:
+    state: link
+    src: "{{ local_timezone }}"
+    dest: /etc/localtime
+
+- name: Enable locale
+  locale_gen:
+    state: present
+    name: "{{ item }}"
+  loop:
+  - en_US.UTF-8
+  - en_GB.UTF-8
+
+- name: Set locale
+  copy:
+    content: |
+        LANG=en_US.UTF-8
+        LC_TIME=en_GB.UTF-8
+        LC_MONETARY=en_GB.UTF-8
+        LC_NUMERIC=en_GB.UTF-8
+        LC_ALL=en_US.UTF-8
+    dest: /etc/locale.conf
+
+- name: Set vconsole keyboard
+  copy:
+    content: "KEYMAP=us\n"
+    dest: /etc/vconsole.conf
+
+- name: Set MOTD
+  copy:
+    content: |
+        Welcome to {{ hostname }}
+    dest: /etc/motd
+
+- name: Set bashrc
+  template:
+    src: bashrc.j2
+    dest: /etc/bash.bashrc
+    owner: root
+    group: root
+    mode: "644"

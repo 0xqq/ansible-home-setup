@@ -1,0 +1,33 @@
+---
+- name: Install docker and docker-compose
+  package:
+    state: present
+    name:
+    - "docker"
+    - "docker-compose"
+
+- name: Enable docker service
+  service:
+    name: docker
+    state: started
+    enabled: yes
+
+- name: Create docker swarm
+  docker_swarm:
+    state: present
+    advertise_addr: "{{ ansible_default_ipv4.address }}"
+    listen_addr: "{{ ansible_default_ipv4.address }}"
+  register: swarm
+  when: hostname == "lisa.santorini.dokoupil.cz"
+  tags:
+  - swarm
+
+- name: Join docker swarm
+  docker_swarm:
+    state: join
+    advertise_addr: "{{ ansible_default_ipv4.address }}"
+    join_token: "{{ hostvars['lisa.santorini.dokoupil.cz'].swarm.swarm_facts.JoinTokens.Worker }}"
+    remote_addrs: "{{ [hostvars['lisa.santorini.dokoupil.cz'].ansible_default_ipv4.address] }}"
+  when: hostname != "lisa.santorini.dokoupil.cz"
+  tags:
+  - swarm

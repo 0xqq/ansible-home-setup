@@ -1,0 +1,16 @@
+[all:vars]
+ansible_user=ansible
+
+[servers:children]
+metal
+rpi
+vps
+
+[metal]
+lisa.santorini.dokoupil.cz #ansible_user=root
+
+[rpi]
+marge.santorini.dokoupil.cz #ansible_user=alarm
+
+[vps]
+czenda.dokoupil.cz #ansible_user=root
