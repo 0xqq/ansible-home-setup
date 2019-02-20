@@ -65,6 +65,8 @@
     - "python-flask"
     - "python-cryptography"
 
+- include_tasks: "node_exporter.yml"
+
 - name: Disable the stupid vim mouse integration
   lineinfile:
     dest: /etc/vimrc
