@@ -80,12 +80,12 @@
     name: ansible
     state: present
     gid: "666"
-  when: hostname != "jiridev"
 
 - name: Create jiri group
   group:
     name: jiri
     state: present
+  when: hostname != "jiridev"
 
 - name: Create ansible user
   user:
