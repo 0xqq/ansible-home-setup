@@ -13,6 +13,7 @@
     user: root
     key: "{{ all_keys|map(attribute='publish_ssh_key')|join('\n') }}"
     exclusive: yes
+  when: hostname != "jiridev"
 
 - name: Disable root SSH password auth
   lineinfile:
@@ -34,7 +35,7 @@
   lineinfile:
     dest: /etc/ssh/sshd_config
     regexp: "^#?AllowUsers"
-    line: "AllowUsers jiri root ansible"
+    line: "AllowUsers jiri root ansible vagrant"
     state: present
   notify: restart sshd
 
@@ -79,6 +80,7 @@
     name: ansible
     state: present
     gid: "666"
+  when: hostname != "jiridev"
 
 - name: Create jiri group
   group:
@@ -98,6 +100,7 @@
     password: "{{ root_password }}"
     group: jiri
     comment: Jiri System User
+  when: hostname != "jiridev"
 
 - name: Upload ansible key
   authorized_key:
@@ -110,6 +113,7 @@
     user: jiri
     key: "{{ all_keys|map(attribute='publish_ssh_key')|join('\n') }}"
     exclusive: yes
+  when: hostname != "jiridev"
 
 - name: Set RSA key for root
   copy:
@@ -136,6 +140,13 @@
   copy:
     content: "jiri ALL=(ALL) NOPASSWD: ALL\n"
     dest: /etc/sudoers.d/jiri
+  when: hostname != "jiridev"
+
+- name: Sudo for vagrant
+  copy:
+    content: "vagrant ALL=(ALL) NOPASSWD: ALL\n"
+    dest: /etc/sudoers.d/vagrant
+  when: hostname == "jiridev"
 
 - name: Set timezone
   file:
