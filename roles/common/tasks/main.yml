@@ -85,7 +85,6 @@
   group:
     name: jiri
     state: present
-  when: hostname != "jiridev"
 
 - name: Create ansible user
   user:
@@ -100,7 +99,6 @@
     password: "{{ root_password }}"
     group: jiri
     comment: Jiri System User
-  when: hostname != "jiridev"
 
 - name: Upload ansible key
   authorized_key:
@@ -113,7 +111,6 @@
     user: jiri
     key: "{{ all_keys|map(attribute='publish_ssh_key')|join('\n') }}"
     exclusive: yes
-  when: hostname != "jiridev"
 
 - name: Set RSA key for root
   copy:
@@ -122,6 +119,7 @@
     owner: root
     group: root
     mode: "400"
+  when: hostname != "jiridev"
 
 - name: Set RSA pubkey for root
   copy:
@@ -130,6 +128,7 @@
     owner: root
     group: root
     mode: "644"
+  when: hostname != "jiridev"
 
 - name: Sudo for ansible
   copy:
@@ -140,7 +139,6 @@
   copy:
     content: "jiri ALL=(ALL) NOPASSWD: ALL\n"
     dest: /etc/sudoers.d/jiri
-  when: hostname != "jiridev"
 
 - name: Sudo for vagrant
   copy:
