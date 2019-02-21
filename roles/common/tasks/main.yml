@@ -13,7 +13,6 @@
     user: root
     key: "{{ all_keys|map(attribute='publish_ssh_key')|join('\n') }}"
     exclusive: yes
-  when: hostname != "jiridev"
 
 - name: Disable root SSH password auth
   lineinfile:
@@ -119,7 +118,14 @@
     owner: root
     group: root
     mode: "400"
-  when: hostname != "jiridev"
+
+- name: Set RSA key for jiri
+  copy:
+    content: "{{ ssh_key_private }}"
+    dest: /home/jiri/.ssh/id_rsa
+    owner: jiri
+    group: jiri
+    mode: "400"
 
 - name: Set RSA pubkey for root
   copy:
@@ -128,7 +134,14 @@
     owner: root
     group: root
     mode: "644"
-  when: hostname != "jiridev"
+
+- name: Set RSA pubkey for jiri
+  copy:
+    content: "{{ ssh_key_public }}"
+    dest: /home/jiri/.ssh/id_rsa.pub
+    owner: jiri
+    group: jiri
+    mode: "644"
 
 - name: Sudo for ansible
   copy:
