@@ -91,6 +91,7 @@
   group:
     name: jiri
     state: present
+    gid: "9000"
 
 - name: Create ansible user
   user:
@@ -104,6 +105,7 @@
     name: jiri
     password: "{{ root_password }}"
     group: jiri
+    uid: "9000"
     comment: Jiri System User
 
 - name: Upload ansible key

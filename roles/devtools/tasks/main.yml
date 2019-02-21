@@ -1,5 +1,5 @@
 ---
-- name: Install basic tools
+- name: Install dev tools
   package:
     state: present
     name:
@@ -56,3 +56,23 @@
     state: link
     src: "/vagrant_home/"
     dest: "/home/jiri/home"
+
+- name: Create a symlink to the .vaultp file
+  file:
+    state: link
+    src: "/vagrant_home/.vaultp"
+    dest: "/home/jiri/.vaultp"
+
+    #- name: Own the vagrant_home folder by user jiri
+    #  file:
+    #    dest: "/vagrant_home/"
+    #    owner: "jiri"
+    #    group: "jiri"
+    #    recurse: "yes"
+    #
+    #- name: Own the vagrant folder by user jiri
+    #  file:
+    #    dest: "/vagrant/"
+    #    owner: "jiri"
+    #    group: "jiri"
+    #    recurse: "yes"
