@@ -56,12 +56,16 @@
     state: link
     src: "/vagrant_home/"
     dest: "/home/jiri/home"
+    owner: jiri
+    group: jiri
 
 - name: Create a symlink to the .vaultp file
   file:
     state: link
     src: "/vagrant_home/.vaultp"
     dest: "/home/jiri/.vaultp"
+    owner: jiri
+    group: jiri
 
     #- name: Own the vagrant_home folder by user jiri
     #  file:
