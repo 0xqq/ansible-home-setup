@@ -50,3 +50,9 @@
     - "net-tools"
     - "ansible"
     - "ansible-lint"
+
+- name: Create a symlink to home directory
+  file:
+    state: link
+    src: "/vagrant_home/"
+    dest: "/home/jiri/home"

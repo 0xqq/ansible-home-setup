@@ -4,8 +4,10 @@ Vagrant.configure("2") do |config|
   config.vm.box = "archlinux/archlinux"
   config.vm.hostname = "jiridev"
   config.vm.synced_folder "~", "/vagrant_home"
-  config.ssh.username = "jiri"
-  config.ssh.private_key_path = "~/.ssh/id_rsa"
+  if ARGV[0] == "ssh"
+    config.ssh.username = "jiri"
+    config.ssh.private_key_path = "~/.ssh/id_rsa"
+  end
   config.vm.provider "virtualbox" do |vb|
     vb.gui = false
     vb.memory = "8192"
