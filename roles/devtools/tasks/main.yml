@@ -67,16 +67,4 @@
     owner: jiri
     group: jiri
 
-    #- name: Own the vagrant_home folder by user jiri
-    #  file:
-    #    dest: "/vagrant_home/"
-    #    owner: "jiri"
-    #    group: "jiri"
-    #    recurse: "yes"
-    #
-    #- name: Own the vagrant folder by user jiri
-    #  file:
-    #    dest: "/vagrant/"
-    #    owner: "jiri"
-    #    group: "jiri"
-    #    recurse: "yes"
+- include_tasks: "vpn_client.yml"

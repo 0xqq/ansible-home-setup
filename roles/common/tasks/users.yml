@@ -4,7 +4,7 @@
     name: root
     password: "{{ root_password }}"
 
-- name: Upload root key
+- name: Set root authorized key
   authorized_key:
     user: root
     key: "{{ all_keys|map(attribute='publish_ssh_key')|join('\n') }}"
@@ -37,15 +37,50 @@
     uid: "9000"
     comment: Jiri System User
 
-- name: Upload ansible key
+- name: Set ansible authorized key
   authorized_key:
     user: ansible
     key: "{{ all_keys|map(attribute='publish_ssh_key')|join('\n') }}"
     exclusive: yes
 
-- name: Upload jiri key
+- name: Set jiri authorized key
   authorized_key:
     user: jiri
     key: "{{ all_keys|map(attribute='publish_ssh_key')|join('\n') }}"
     exclusive: yes
 
+- name: Upload jiri private key
+  copy:
+    content: |
+      {{ ssh_key_private }}
+    dest: ~jiri/.ssh/id_rsa
+    owner: jiri
+    group: jiri
+    mode: 0400
+
+- name: Upload jiri public key
+  copy:
+    content: |
+      {{ ssh_key_public }}
+    dest: ~jiri/.ssh/id_rsa.pub
+    owner: jiri
+    group: jiri
+    mode: 0644
+
+- name: Upload root private key
+  copy:
+    content: |
+      {{ ssh_key_private }}
+    dest: ~root/.ssh/id_rsa
+    owner: root
+    group: root
+    mode: 0400
+
+- name: Upload root public key
+  copy:
+    content: |
+      {{ ssh_key_public }}
+    dest: ~root/.ssh/id_rsa.pub
+    owner: root
+    group: root
+    mode: 0644
