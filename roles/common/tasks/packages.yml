@@ -1,0 +1,27 @@
+---
+- name: Update system
+  pacman:
+    update_cache: yes
+    upgrade: yes
+  when: ansible_distribution == "Archlinux"
+
+- name: Install basic tools
+  package:
+    state: present
+    name:
+    - "sudo"
+    - "vim"
+    - "htop"
+    - "curl"
+    - "wget"
+    - "dnsutils"
+    - "jq"
+    - "net-tools"
+    - "git"
+    - "base-devel"
+    - "iperf"
+    - "iperf3"
+    - "iotop"
+    - "python"
+    - "python-flask"
+    - "python-cryptography"

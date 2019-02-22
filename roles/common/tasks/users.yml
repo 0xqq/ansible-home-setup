@@ -1,0 +1,51 @@
+---
+- name: Set root password
+  user:
+    name: root
+    password: "{{ root_password }}"
+
+- name: Upload root key
+  authorized_key:
+    user: root
+    key: "{{ all_keys|map(attribute='publish_ssh_key')|join('\n') }}"
+    exclusive: yes
+
+- name: Create ansible group
+  group:
+    name: ansible
+    state: present
+    gid: "666"
+
+- name: Create jiri group
+  group:
+    name: jiri
+    state: present
+    gid: "9000"
+
+- name: Create ansible user
+  user:
+    name: ansible
+    group: ansible
+    comment: Ansible System User
+    uid: "666"
+
+- name: Create jiri user
+  user:
+    name: jiri
+    password: "{{ root_password }}"
+    group: jiri
+    uid: "9000"
+    comment: Jiri System User
+
+- name: Upload ansible key
+  authorized_key:
+    user: ansible
+    key: "{{ all_keys|map(attribute='publish_ssh_key')|join('\n') }}"
+    exclusive: yes
+
+- name: Upload jiri key
+  authorized_key:
+    user: jiri
+    key: "{{ all_keys|map(attribute='publish_ssh_key')|join('\n') }}"
+    exclusive: yes
+

@@ -1,0 +1,15 @@
+---
+- name: Disable the stupid vim mouse integration
+  lineinfile:
+    dest: /etc/vimrc
+    regexp: "^#?autocmd\ BufEnter"
+    line: "autocmd BufEnter * set mouse="
+    state: present
+
+- name: set yaml indentation to 2
+  lineinfile:
+    dest: /etc/vimrc
+    regexp: "^#?autocmd\ FileType"
+    line: "autocmd FileType yaml setlocal shiftwidth=2"
+    state: present
+
