@@ -18,7 +18,8 @@ Vagrant.configure("2") do |config|
     ansible.verbose = true
     ansible.vault_password_file = "/vagrant_home/.vaultp"
     ansible.extra_vars = {
-      hostname: "jiridev"
+      hostname: "jiridev",
+      yaourt_user: "vagrant"
     }
   end
 end
